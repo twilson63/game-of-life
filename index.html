@@ -23,6 +23,7 @@
           </td>
         </tr>
       </table>
+      <input type="text" placeholder="board size" ng-model="size">
       <button class="btn" ng-click="start()">Start</button>
       <button class="btn" ng-click="stop()">Stop</button>
     </div>
@@ -30,8 +31,9 @@
     <script src="gol.js"></script>
     <script>
       function Main($scope) {
+        $scope.size = 25;
         $scope.rows = [];
-        var game = gol({size: 10});
+        var game = gol({size: $scope.size});
         game.emitter.on('repaint', function(board) {
           $scope.$apply(function() {
             $scope.rows = board;

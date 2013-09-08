@@ -2,6 +2,12 @@ var _ = require('underscore');
 var EventEmitter = require('events').EventEmitter;
 var ee = new EventEmitter();
 var running = false;
+
+// default rules
+// this can be configured by passing in a 
+// replacement via the config object
+// but the passed in rules replacement
+// must use the (cell, neighbors) pattern
 var rules = function(cell, neighbors) {
   if (cell) {
     if (neighbors < 2) cell = false;
@@ -9,11 +15,10 @@ var rules = function(cell, neighbors) {
   } else {
     if (_.isEqual(neighbors, 3)) cell = true;
   }
-  console.log(cell);
   return cell;
 }
 
-
+// main gol module
 module.exports = gol = function(config) {
   var board = seed(config.size);
   rules = _.isFunction(config.rules) ? config.rules : rules;
@@ -29,6 +34,7 @@ module.exports = gol = function(config) {
   }
 }
 
+// game tick event
 function tick(board, rules) {
   ee.emit('repaint', board);
   var newBoard = [];
@@ -45,6 +51,7 @@ function tick(board, rules) {
   }
 }
 
+// game random seed
 function seed(size) {
   var rows = [];
   _.times(size, function(y) {
@@ -70,6 +77,7 @@ var cell = function(b, fn, fn2) {
   }
 }
 
+// get neighbor count
 function neighbors(x,y,b) {
   return _([
     cell(b, p(top, y), p(left, x)),
