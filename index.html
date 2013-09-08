@@ -33,14 +33,15 @@
       function Main($scope) {
         $scope.size = 25;
         $scope.rows = [];
-        var game = gol({size: $scope.size});
-        game.emitter.on('repaint', function(board) {
+        var game;
+        var repaint = function(board) {
           $scope.$apply(function() {
             $scope.rows = board;
           });
-        });
+        };
         $scope.start = function() {
-          console.log('stat');
+          game  = gol({size: $scope.size});
+          game.emitter.on('repaint', repaint); 
           game.start();
         };
         $scope.stop = function() {
