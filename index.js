@@ -1,32 +1,48 @@
 var _ = require('underscore');
 var EventEmitter = require('events').EventEmitter;
 var ee = new EventEmitter();
+var running = false;
+var rules = function(cell, neighbors) {
+  if (cell) {
+    if (neighbors < 2) cell = false;
+    if (neighbors > 3) cell = false;
+  } else {
+    if (_.isEqual(neighbors, 3)) cell = true;
+  }
+  console.log(cell);
+  return cell;
+}
+
 
 module.exports = gol = function(config) {
   var board = seed(config.size);
+  rules = _.isFunction(config.rules) ? config.rules : rules;
   return {
+    stop: function() {
+      running = false;
+    },
     start: function() {
-      setTimeout(_.partial(tick, board), 200);
+      running = true;
+      setTimeout(_.partial(tick, board, rules), 200);
     },
     emitter: ee
   }
 }
 
-function tick(board) {
+function tick(board, rules) {
   ee.emit('repaint', board);
+  var newBoard = [];
   _.each(board, function(columns, row) {
+    var cols = []; 
     _.each(columns, function(cell, col) {
-     var count = neighbors(col, row, board);
-     if (cell) {
-       if (count < 2) cell = false;
-       if (count > 3) cell = false;
-     } else {
-       if (_.isEqual(count, 3)) cell = true;
-     }
-     board[row][col] = cell;
+     cell = rules(cell, neighbors(col, row, board));
+     cols.push(cell);
     });
+    newBoard.push(cols);
   });
-  setTimeout(_.partial(tick, board), 200);
+  if (running) {
+    setTimeout(_.partial(tick, newBoard, rules), 200);
+  }
 }
 
 function seed(size) {
@@ -67,9 +83,16 @@ function neighbors(x,y,b) {
     ]).filter(_.identity).length;
 }
 
-var game = gol({size: 10});
-game.emitter.on('repaint', function(board) {
-  console.log(board);
-});
-game.start();
+// example
+//
+//var game = gol({size: 10});
+//game.emitter.on('repaint', function(board) {
+//  _.each(board, function(cols, y) { 
+//    _.each(cols, function(cell, x) {
+//      board[y][x] = cell ? '.' : '';
+//    });
+//  });
+//  console.log(board);
+//});
+//game.start();
 

@@ -1,0 +1,50 @@
+<!doctype html>
+<html ng-app>
+  <head>
+    <title>Game of Life</title>
+    <link rel="stylesheet" href="/bower_components/bootstrap/docs/assets/css/bootstrap.css">
+    <style>
+      .active {
+        background: green
+      }
+      td {
+        background: whitesmoke;
+        width: 20px;
+      }
+    </style>
+  </head>
+  <body ng-controller="Main">
+    <div class="container">
+      <h1>Game of Life</h1>
+      <table>
+        <tr ng-repeat="cols in rows">
+          <td ng-class="{ active: cell }" ng-repeat="cell in cols">
+           &nbsp; 
+          </td>
+        </tr>
+      </table>
+      <button class="btn" ng-click="start()">Start</button>
+      <button class="btn" ng-click="stop()">Stop</button>
+    </div>
+    <script src="/bower_components/angular/angular.js"></script>
+    <script src="/gol.js"></script>
+    <script>
+      function Main($scope) {
+        $scope.rows = [];
+        var game = gol({size: 10});
+        game.emitter.on('repaint', function(board) {
+          $scope.$apply(function() {
+            $scope.rows = board;
+          });
+        });
+        $scope.start = function() {
+          console.log('stat');
+          game.start();
+        };
+        $scope.stop = function() {
+          game.stop();
+        };
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "name": "gol",
+  "main": "index.js",
+  "version": "0.0.0",
+  "authors": [
+    "twilson63 <tom@jackhq.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
